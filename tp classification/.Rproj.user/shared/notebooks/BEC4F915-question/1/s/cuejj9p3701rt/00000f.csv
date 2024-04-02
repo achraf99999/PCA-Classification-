@@ -1,0 +1,4 @@
+"0",""
+"0","#Visualiser l'effet coude.Combien de classes peut-on consid?rer ? "
+"0",""
+"0","plot(1:40,hc1$height[40:1],type=""b"") "

@@ -1,0 +1,33 @@
+"0","# Install the factoextra "
+"0","install.packages(""factoextra"")"
+"2","Installing package into ‘C:/Users/21650/AppData/Local/R/win-library/4.2’
+(as ‘lib’ is unspecified)
+"
+"2","trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/factoextra_1.0.7.zip'
+"
+"2","Content type 'application/zip'"
+"2"," length 416584 bytes (406 KB)
+"
+"2","downloaded 406 KB
+
+"
+"1","package ‘factoextra’ successfully unpacked and MD5 sums checked
+"
+"1","
+"
+"1",""
+"1","The downloaded binary packages are in
+	C:\Users\21650\AppData\Local\Temp\RtmpeUXjfE\downloaded_packages"
+"1",""
+"1","
+"
+"0","# Load the factoextra package"
+"0",""
+"0","library(factoextra)"
+"2","Warning: package ‘factoextra’ was built under R version 4.2.3"
+"2","Loading required package: ggplot2
+"
+"2","Warning: package ‘ggplot2’ was built under R version 4.2.3"
+"2","Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+"
+"0","fviz_screeplot(res.pca, addlabels = TRUE, ylim = c(0, 70), ncp=10)"

@@ -1,0 +1,8 @@
+"0","# On a utilis? 26 crit?res pour calculer la qualit? des classifications"
+"0","sum(table(nc_km$Best.n[1, ]))"
+"1","[1]"
+"1"," 26"
+"1","
+"
+"0","# Afficher le graphique des nombres de classes"
+"0","barplot(table(nc_km$Best.n[1, ]), xlab = ""Number of Clusters"", ylab = ""Number of Criteria"",  main = ""Number of Clusters Chosen by 26 Criteria"")"

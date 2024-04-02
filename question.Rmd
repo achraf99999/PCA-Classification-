@@ -1,0 +1,446 @@
+---
+title: "ProjetAD"
+author: "Lassoued Achraf"
+date: "03/08/2023"
+output:
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+```{r setup , include=FALSE }
+
+knitr::opts_chunk$set(echo = TRUE)
+
+
+```
+
+## 1/-Introduction :
+
+### *Définition du l'enquete :
+
+Cette étude est faite dans le but de dresser l'évolution de regarder les films en Tunisie.
+
+Pour cela un questionnaire contenant 15 questions a été posé et nous avons enregistré les différentes réponses .
+
+Ensuite nous avons procedé aux étapes ci-dessous afin d'analyser les données recueillies.
+
+### *Importation du base :
+
+```{r}
+library(readxl)
+ques <- read_excel("Titre de la fiche d'exercices (réponses)2.xlsx")
+
+```
+
+### *Résumé du base :
+
+Parmi les questions proposées dans le questionnaire Nous avons demandé aux gens qui ont répondus au questionnaire d’attribuer un cause pour regarder les films: Presse spécialisée, Presse généraliste , Site Internet ....
+Le type des films: action, fiction animations ....
+
+1 :Toujours. 2 : Souvent. 3 : Parfois. 4 : Rarement. 5 : Jamais.
+  Pour analyser ces facteurs on va réaliser une analyse de la composantes principale (ACP) dans le but de donner les liens pouvant exister entre les différentes données et à en tirer une information statistique qui permet de décrire de façon plus succincte les principales informations contenues dans ces données. On peut également chercher à classer les données en différents sous-groupes plus homogènes.
+
+```{r}
+summary(ques[,39:49])
+
+```
+
+## 2/-Statistique descriptive :
+### i :
+```{r}
+
+barplot(table(ques$genre),col="orange", main = "Bar plot d'une variable qualitative")
+
+```
+
+Cette enquête a été effectué sur 30 personnes .Parmis les personnes interrogées, il y en a 36.7% de femmes et 63.3% d'hommes.
+
+### ii :
+
+```{r}
+colors=c("#555b6e","#89b0ae","#bee3db","#ffd6ba")
+b <- barplot(table(ques$`3-Combien de fois par semaine regardez-vous les films/séries?`),col=colors,ylim=c(0,50))
+text(b[,1],table(ques$`3-Combien de fois par semaine regardez-vous les films/séries?`)-1,table(ques$`3-Combien de fois par semaine regardez-vous les films/séries?`))
+
+```
+
+Interprétation: on remarque que la majorité des repondants regarde un  films au plus fois dans la semaine 
+
+## 3/- Analyse en Composantes Principales :
+
+Pour avoir les principaux raisons pour regarder un film,nous avouns effectuer une ACP sur 11 variables quantitatives (Presse spécialisée, Presse généraliste , Site Internet , Emission télévisuelle, Bande annonce, Conseils d'un ami, Conseils d'un membre de la famille, Critiques de films ,Bandes Annonces,L'affiche ,Le hasard)
+Cette méthode synthetise toutes ces informations en seulement quelques nouvelles variables appelées composantes principales( une combinaison linéaire des variables d'origine.
+Elle regroupe également les individus ayant les meme raisons de regarder les films.
+
+### *Pertinence de l’ACP:
+
+Le corrgram donné ci-dessous permet d’étudier les corrélations entre les variables quantitatives : il est clair qu’il existe des corrélations importantes entre des groupes de variables ce qui suggère la pertinence de cette ACP.
+
+```{r}
+X=as.matrix(ques[,39:49])
+p=ncol(X)
+
+M=diag(rep(1,p)) 
+
+M<-cor(X)
+M
+library(corrplot)
+COL2(diverging = c("RdBu", "BrBG", "PiYG", "PRGn", "PuOr", "RdYlBu"), n = 200)
+corrplot(M, type="upper", order="hclust", 
+         col=COL2('PuOr', 10))
+
+```
+
+### *Choix des axes :
+
+
+
+```{r}
+library(FactoMineR)
+X=ques[,39:49]
+res.pca=PCA(X,ncp = 5,graph = F)
+head(res.pca$eig)
+
+```
+
+
+#### **critére de kaiseur :
+
+Le critère de Kaiser nous conduit à sélectionner 2 axes (dont la valeur propre est supérieure à 1). 
+
+#### **Taux d’inertie :
+
+Les deux premiers axes retiennent environ 72.45887 % > 60% de l’inertie totale donc on peut retenir ces 2 axes selon ce critère.
+
+### *Les coordonnées :
+
+```{r}
+res.pca$var$coord
+res.pca$var$cos2
+```
+
+
+#### **Critère de Coude :
+
+```{r}
+library(factoextra)
+fviz_screeplot(res.pca, addlabels = TRUE, ylim = c(0, 70), ncp=10)
+names(res.pca$var)
+
+```
+
+Conclusion :: Le critère de coude conduit aussi à retenir les 2 premiers axes. 
+==>Après la réalisation de ces 3 critères on va retenir les 2 premiers axes.
+
+### *Cercle de corrélation :
+
+La corrélation entre une variable et une composante principale (PC) est utilisée comme coordonnées de la variable sur la composante principale. La représentation des variables diffère de celle des observations : les observations sont représentées par leurs projections, mais les variables sont représentées par leurs corrélations.
+
+#### Qualité de représentation : 
+
+##### méthode1:
+
+```{r}
+fviz_pca_var(res.pca, col.var = "indianred",col.quanti.sup="darkblue" )
+```
+
+Le graphique ci-dessus montre que les variables les plus corrélées à l’axe 1 sont : Emission télevisuelle , les presses..(Réseaux sociaux)
+On peut voir aussi que les variables les plus corrélées à l’axe 2 sont : Bandes Annonces , Critiques de films,conseil d'un amis.
+
+##### méthode2:
+
+```{r}
+fviz_pca_var(res.pca, col.var="cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE) +
+  scale_color_gradient2(low="#00AFBB", mid="#E7B800", 
+                        high="#FC4E07", midpoint=0.6) + 
+  theme_minimal()
+```
+Interpretation :
+La variable {conseils d'amis} est positivement corrélée a la variable {critique de films } et
+{affiche} . L'individus(es) qui est influée par la l'affiche  est plus influée par la conseils d'amis et  critique de films lors du choix du film
+
+### *Contribution : 
+
+#### Premier axe :
+
+```{r}
+fviz_contrib(res.pca, choice = "var", axes = 1, top = 30)
+
+```
+
+Presse généraliste, Presse spécialisée , Emission télévisuelle  sont les variables qui ont un rôle dominant dans la formation du premier axe factoriel.
+
+#### Deuxiéme axe :
+
+```{r}
+fviz_contrib(res.pca, choice = "var", axes = 2, top = 30)
+```
+Bandes Annonces, Critiques de films et Conseils d'un ami  sont les variables qui ont un rôle dominant dans la formation du deuxiéme axe factoriel.
+
+
+### *Graphique des individus :
+
+#### carte des individus:
+
+```{r}
+fviz_pca_ind (res.pca, col.ind = "cos2",
+gradient.cols = c("#f6821f", "#dc4048", "#7acdf1"),
+repel = TRUE)
+```
+
+Le prémier  axe oppose des individus tels que  14 1 9 23 21 9 (à droite du graphe, caractérisés par une coordonnée fortement positive sur l’axe) à des individus comme 28 11 3 7 11 (à gauche du graphe , caractérisés par une coordonnée fortement négative sur l’axe).
+
+*Le groupe auquel les individus  14 1 21 appartiennent (caractérisés par une coordonnée positive sur l’axe 1) partage : De fortes valeurs pour les variables : les presses, emission televisuelle...
+
+*Le groupe auquel les individus 17 8 4 12 4 11 appartiennent (caractérisés par une coordonnée négative sur l’axe) partage : bande d'annance ...
+
+## 4/-Classification :
+### *Visualisation des individus et les grouper :
+
+
+
+```{r}
+library(NbClust)
+library(cluster)
+
+cl3 = kmeans(X, centers = 2)  
+cl3$cluster
+cl3$centers
+classif<-agnes(X, method="ward")
+d=dist(scale(X),method = "euclidian")
+hc1=hclust(d,method = "ward.D") # or complete or average
+classif2<-as.hclust(classif)
+plot(rev(classif2$height), type="h", ylab="hauteurs")
+rect.hclust(hc1,k=2)
+classes<-cutree(classif2,k=2)
+classes
+
+nc <- NbClust(X, min.nc = 2, max.nc = 10, method = "kmeans")
+nc
+
+
+```
+
+
+```{r}
+
+#2. Déterminer la meilleure partition
+set.seed(1234)
+nc_km <- NbClust(X, min.nc = 2, max.nc = 15, method = "kmeans" )
+# On a utilis? 26 crit?res pour calculer la qualit? des classifications
+sum(table(nc_km$Best.n[1, ]))
+
+# Afficher le graphique des nombres de classes
+barplot(table(nc_km$Best.n[1, ]), xlab = "Number of Clusters", ylab = "Number of Criteria",  main = "Number of Clusters Chosen by 26 Criteria")
+
+```
+
+
+
+```{r}
+
+
+# Application de la méthode k-means avec le nombre de clusters optimal
+k <- kmeans(X, centers = 2, nstart = 25)
+
+k
+
+```
+
+
+
+```{r}
+
+#3. Rajouter la classe d'affectation de chaque individu en tant que variable
+
+X.comp<-cbind.data.frame(X, as.factor(classes))
+X.comp
+
+```
+
+```{r}
+
+#4. Description des classes
+#   La fonction catdes permet de trier les variables quanti de la plus caractérisante à la moins caractérisante en positif
+
+res.cat=catdes(X.comp, num.var=12)
+res.cat
+# #proba: the significance threshold considered to characterize the category (by default 0.05)
+```
+
+
+
+
+```{r}
+
+res.hcpc <- HCPC(X,  graph = FALSE , nb.clust = 2)
+
+fviz_cluster(res.hcpc,
+             repel = TRUE,            
+             show.clust.cent = TRUE, 
+             palette = "jco", 
+             ggtheme = theme_minimal(),
+              main = "Factor map"
+             )
+# Extract cluster membership information
+cluster_labels <- res.hcpc$data.clustering
+
+# Create a list of unique cluster labels
+unique_clusters <- unique(cluster_labels)
+
+# Print the list of unique cluster labels
+unique_clusters
+
+
+```
+
+La classification réalisée sur les individus fait apparaître  classes.
+La classe 1 est composée d’individus tels que 8 25 6 17 28 3 15 11 12 4 Ce groupe est caractérisé par : De fortes valeurs pour les variables : presses
+
+la classe 2 est composée d’individus tels que 20 26 23 5 16 27 30 32 31 20 2 14 13  11  Ce groupe est caractérisé par : De fortes valeurs pour les variables Développer des relations sociales 
+
+
+
+
+### les différents classes :
+
+```{r}
+
+fviz_dend(res.hcpc, 
+          cex = 0.7,                     
+          palette = "jco",               
+          rect = TRUE, rect_fill = TRUE, 
+          labels_track_height = 0.8,
+          color_labels_by_k = TRUE     # Set colors based on clustering results
+          )
+
+
+```
+
+## 5/- AFC :
+
+
+
+### Tableaus des profils :
+
+
+
+```{r}
+
+
+library(questionr)
+library("factoextra")
+library(FactoMineR)
+
+variables <- ques[, c(5,46)]
+
+variables <- lapply(variables, factor)
+
+tab1<-table(variables)
+tab1
+#Tableau des profils-lignes
+lprop(tab1)
+
+``` 
+
+
+```{r}
+#Tableau des profils-colonnes
+tab1
+cprop(tab1)
+
+```
+
+### Test du chi-2
+
+```{r}
+test<-chisq.test(tab1)
+test
+
+```
+Interpretation : 
+
+La valeur du χ2 est de 33.975 . Le degré de liberté du χ2 est de 
+(p−1)∗(q−1)=(5−1)∗(6−1)=20
+En se basant sur la valeur p de 0.02629 , qui est inférieure au seuil conventionnel de 0,05, nous pouvons rejeter l'hypothèse nulle et conclure qu'il y a des preuves d'une association significative entre les deux variables. En d'autres termes, les résultats suggèrent que les variables "Votre statut" et "Dans quelle tranche d'âge vous situez vous " ne sont pas indépendantes et sont liées entre elles.
+
+l’AFC est donc pertinente.
+
+
+### Exécution de l’AFC
+
+```{r}
+res.ca<-CA(tab1,graph=F)
+
+```
+
+### Choix des axes :
+
+```{r}
+
+res.ca$eig
+fviz_screeplot (res.ca, addlabels = TRUE, ylim = c (0, 60))
+
+```
+
+Les 2 premiers axes de l’AFC expriment 72.1% de l’inertie totale du jeu de données ; cela signifie que la majoritée la variabilité totale du nuage des individus (ou des variables) est représentée dans ce plan.
+
+### Graphique des variables et des individus :
+
+1 :Toujours. 2 : Souvent. 3 : Parfois. 4 : Rarement. 5 : Jamais.
+
+
+```{r}
+fviz_ca_biplot (res.ca, repel = TRUE, 
+               ggtheme = theme_minimal())
+```
+▶ Quelques associations : profession libérale 4(rarement ) : les employées rearement influsence par la Critiques de films ,et demandeur d'emploi sont souvent influence par la Critiques de films ,autres(chomeur ou retretaire) 5(toujours).
+▶ “statut employé” est plus excentre que “souvent” sur le premier axe car ´
+les statut employé sont beaucoup mieux carcterisés par le modalités souvent ´que l’inverse 
+
+## 5/- ACM :
+
+Cette partie est spécifiée pour comprendre la position de chaque modalité dans notre jeu de données c’est-à-dire
+on va faire un ACP sur les variables qualitatives. Nous allons étudier les modalités pour mieux comprendre
+la consommation et le moment de consommation des sucreries d’un individu .
+
+```{r}
+
+active<-ques[,50:54]
+sapply(active, class)
+
+res.mca <- MCA (active, graph = FALSE)
+fviz_screeplot(res.mca)
+res.mca$eig
+
+```
+
+Critère 1 : Retenir les axes dont les valeurs propres sont supérieures à la moyenne des valeurs propres ( m=
+5) est 1/m=0.2 . Donc d’aprés ce critère on choisit un seul axe .
+Critère 2: Critère du coude : On remarque que le coude se trouve au niveau du deuxième axe (voir la figure
+Scree plot), d’après ce critère, on devrait retenir les 2 premiers axes.
+Critère 3 : ce critère est specifiée pour l’inertie cumulée , si on prend  un seul axe l’inertie cumulée est 49.29619%
+mais si on prend les trois premiers axes on obtient 68.35856%
+Conclusion: on retient les deux premiers axes
+```{r}
+fviz_mca_var (res.mca,
+              repel = TRUE, 
+              ggtheme = theme_minimal ())
+
+```
+
+G1=[location de films_non,Au cinéma_oui,sur l'ordinateur_non,A la télévision_non] /// G2=[sur l'ordinateur_oui,location de films_non,télévision_oui,La streaming_oui] 
+Le groupe G1 semble préférer l'expérience de visionnage de films au cinéma, ce qui peut être considéré comme une activité de divertissement saine et socialement engageante. D'un autre côté, le groupe G2 a tendance à privilégier la visualisation sur ordinateur et à la télévision, ce qui peut entraîner une sédentarité accrue et des effets négatifs sur la santé.
+```{r}
+
+fviz_mca_ind (res.mca,select.ind  = list(cos2 = 0.4),
+              repel = TRUE, 
+              ggtheme = theme_minimal ())
+```
+Le premier groupe est composé de 1 14 2 13 3 personnes, qui ont tendance à regarder des films généralement au cinéma. De même, le groupe G2 est constitué de 12 7 10 6 30   individus qui préfèrent utiliser des ordinateurs et des télévisions.

@@ -1,0 +1,10 @@
+"0","# Extract cluster membership information"
+"0","cluster_labels <- res.hcpc$data.clustering"
+"0",""
+"0","# Create a list of unique cluster labels"
+"0","unique_clusters <- unique(cluster_labels)"
+"0",""
+"0","# Print the list of unique cluster labels"
+"0","unique_clusters"
+"1","NULL
+"

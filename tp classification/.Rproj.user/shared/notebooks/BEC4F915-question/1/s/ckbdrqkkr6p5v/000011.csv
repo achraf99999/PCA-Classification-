@@ -1,0 +1,7 @@
+"0","fviz_pca_var(res.pca, col.var=""cos2"",gradient.cols = c(""#00AFBB"", ""#E7B800"", ""#FC4E07""), repel = TRUE) +"
+"0","  scale_color_gradient2(low=""#00AFBB"", mid=""#E7B800"", "
+"0","                        high=""#FC4E07"", midpoint=0.6) + "
+"0","  theme_minimal()"
+"2","[38;5;232mScale for [32mcolour[38;5;232m is already present.
+Adding another scale for [32mcolour[38;5;232m, which will replace the existing
+scale.[39m"

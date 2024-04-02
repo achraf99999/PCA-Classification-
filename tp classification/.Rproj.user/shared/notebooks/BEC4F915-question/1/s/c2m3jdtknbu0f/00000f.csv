@@ -1,0 +1,5 @@
+"0","library(readxl)"
+"0","ques <- read_excel(""Titre de la fiche d'exercices (réponses)2.xlsx"")"
+"0","ques2 <- read_excel(""C:/Users/21650/Downloads/ques2.xlsx"")"
+"0","View(ques)"
+"0",""

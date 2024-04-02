@@ -1,0 +1,6 @@
+"0",""
+"0","#3. Rajouter la classe d'affectation de chaque individu en tant que variable"
+"0",""
+"0","X.comp<-cbind.data.frame(X, as.factor(classes))"
+"0","colnames(X.comp)[11]<-""Classe"""
+"0","X.comp"

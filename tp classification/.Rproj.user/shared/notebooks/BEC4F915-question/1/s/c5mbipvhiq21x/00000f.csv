@@ -1,0 +1,2 @@
+"0","barplot(table(ques2$Action,ques2$Horreur), beside = TRUE, legend = levels(ques2$Horreur), "
+"0","      main =""Barplot par modalités"")"

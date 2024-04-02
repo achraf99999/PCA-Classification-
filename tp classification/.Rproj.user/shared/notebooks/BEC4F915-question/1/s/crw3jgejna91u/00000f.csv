@@ -1,0 +1,3 @@
+"0",""
+"0","barplot(table(ques2$genre),col=""orange"", main = ""Bar plot d'une variable qualitative"")"
+"0",""

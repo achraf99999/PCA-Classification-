@@ -1,0 +1,35 @@
+library(readxl)
+
+library(FactoMineR)
+update.packages("FactoMineR")
+
+
+cluster12 <- read_excel("C:/Users/21650/Desktop/ODD/code.xlsx",sheet = "Data2021")
+View(cluster12)
+
+library(FactoMineR)
+update.packages("FactoMineR")
+X=cluster12[,6:58]
+res.pca=PCA(X,ncp = 5,graph = F)
+head(res.pca$eig)
+res.pca$var$coord
+res.pca$var$cos2
+install.packages("factoextra")
+
+# Load the factoextra package
+update.packages("factoextra")
+
+library(factoextra)
+fviz_screeplot(res.pca, addlabels = TRUE, ylim = c(0, 70), ncp=10)
+names(res.pca$var)
+fviz_pca_var(res.pca, col.var = "indianred",col.quanti.sup="darkblue" )
+fviz_pca_var(res.pca, col.var="cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE) +
+  scale_color_gradient2(low="#00AFBB", mid="#E7B800", 
+                        high="#FC4E07", midpoint=0.6) + 
+  theme_minimal()
+fviz_contrib(res.pca, choice = "var", axes = 1, top = 30)
+
+fviz_contrib(res.pca, choice = "var", axes = 2, top = 30)
+
+summary(X)
+
